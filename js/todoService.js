@@ -84,5 +84,15 @@ Extend(LocalTODOService, Object, {
 			task.complete = complete;	
 		}
 		this._callback(callback, task);
+	},
+	clearTask: function(taskId, callback) {
+		var task = this._storage.tasks[taskId];
+		if (task && task.complete) {
+			delete this._storage.tasks[taskId];	
+			this._callback(callback, task);
+		} else {
+			this._callback(callback, {error: "Task not cleared"});
+		}
+		
 	}
 });

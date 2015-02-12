@@ -72,7 +72,19 @@ body {
 	overflow: hidden;
 	white-space: nowrap;
 }
-
+#tasks_list li.completed .dlt_icon {
+	visibility: visible;
+}
+#tasks_list li .dlt_icon {
+	visibility: hidden;
+}
+#tasks_list .dlt_icon {
+	float: right;
+	text-indent: 0;
+	text-decoration: none;
+	color: #ff6822;
+	font-size: 20px
+}
 #msg {
 	margin: 0 auto;
 	padding: 5px;

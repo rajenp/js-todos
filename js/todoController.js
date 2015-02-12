@@ -23,11 +23,13 @@ var TODOView = function () {
 	this.init();
 };
 
-TODOView.TASK_TMPL = "<li title='{task}' id='{id}_li' class='{cls}'><input type='checkbox' {checked} id='{id}'> <span class='text'>{task}</span> </li>";
+TODOView.TASK_TMPL = "<li title='{task}' id='{id}_li' class='{cls}'><input type='checkbox' {checked} id='{id}'> <span class='text'>{task}</span> <a href='javascript:void(0)' id='{id}_delete' class='dlt_icon'>⊗</a></li>";
 
 TODOView.EVENT_ADD_TASK = "ADD_TASK";
 
 TODOView.EVENT_TASK_CHANGED = "TASK_CHANGED";
+
+TODOView.EVENT_DELETE_TASK= "DELETE_TASK";
 
 Extend(TODOView, EventTarget, {
 	init: function () {
@@ -41,6 +43,9 @@ Extend(TODOView, EventTarget, {
 				//wait until we update it on server
 				target.checked = !target.checked;
 				me._onTaskChange(target.id, checked);	
+			} else if(target.id && target.id.indexOf("_delete") > 0) {
+				var taskId = target.id.split("_")[0];
+				me.notify(TODOView.EVENT_DELETE_TASK, taskId);
 			}
 		});
 	},
@@ -78,8 +83,19 @@ Extend(TODOView, EventTarget, {
 			new_task.value = "";
 		}
 		var dom = $("tasks_list");	
-		task && dom && (dom.innerHTML = $template(TODOView.TASK_TMPL, task) + dom.innerHTML);
-		this.showMessage("Task added");
+		if(dom && task) {
+			var elem = document.createElement("ul");
+			elem.innerHTML = $template(TODOView.TASK_TMPL, task);
+			dom.appendChild(elem.firstChild);
+			elem = null;
+		}
+		//task && dom && (dom.innerHTML = $template(TODOView.TASK_TMPL, task) + dom.innerHTML);
+	},
+	clearTask: function (taskId) {
+		var task = $(taskId + "_li"); 
+		if (task) {
+			task.parentNode.removeChild(task);
+		}
 	},
 	showMessage: function (msg, style) {
 		var div = $("msg");
@@ -102,12 +118,14 @@ Extend(TODOController, EventTarget, {
 		this._view = new TODOView();
 		this._view.listen(TODOView.EVENT_ADD_TASK, new Callback(this.addTask, this));
 		this._view.listen(TODOView.EVENT_TASK_CHANGED, new Callback(this.updateTask, this));
+		this._view.listen(TODOView.EVENT_DELETE_TASK, new Callback(this.clearTask, this));
 	},
 	_preProcessResponse: function (response) {	
-		if (response && response.response && !response.error) {
+		var error = !response || !response.response || response.error || response.response.error;
+		if (!error) {
 			return typeof response.response === "string" ? JSON.parse(response.response) : response.response;
 		} 
-		this._view.showMessage("Error: " +  (response.error || "Something went wrong!"), "error");
+		this._view.showMessage("Error: " +  (error || "Something went wrong!"), "error");
 	},
 	launch: function () {
 		this.init();
@@ -157,6 +175,16 @@ Extend(TODOController, EventTarget, {
 			this._view.updateStatus(task.id, task.complete);
 			this._view.showMessage("Task updated");
 		}	 
+	},
+	clearTask: function(taskId) {
+		this._service.clearTask(taskId, new Callback(this.taskCleared, this));			
+	},
+	taskCleared: function (response) {
+		var task = this._preProcessResponse(response);
+		if (task) {
+			this._view.clearTask(task.id);
+			this._view.showMessage("Task cleared");
+		}	
 	}
 });
 
