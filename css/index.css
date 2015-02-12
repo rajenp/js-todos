@@ -1,0 +1,129 @@
+/*
+ * Copyright 2015 Rajendra Patil
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * @author Rajendra Patil
+ */
+
+body {
+	padding: 0;
+	margin: 0;
+}
+#layout {
+	width: 800px;
+	margin: 5% auto;
+}
+#logo, form, #msg {
+	text-align: center;
+}
+#logo {
+	font-family: cursive;
+	font-size: 100px;
+	color: #bdd0e1;
+	width: 100%;
+}
+#tasks {
+	padding-top: 10px;
+	border: 1px solid #ccc;
+	width: 50%;
+	margin: 20px auto;
+	box-shadow: 5px 5px 5px #ddd;
+}
+#new_task, #new_task_btn, .add_task td {
+	line-height: 25px;
+} 
+#new_task {
+	width: 150px;
+	text-indent: 5px;
+}
+  
+#tasks .label {
+	text-align: right;
+	color: #666;
+}
+#tasks_list {
+	list-style: none;
+	padding: 20px 0;
+	margin: 0 auto;
+	width: 100%;
+}
+#tasks_list li:first-child {
+	border-top: 1px solid #bbb;	
+}
+#tasks_list li {
+	padding: 8px;
+	text-align: left;
+	text-indent: 133px;
+	border-bottom: 1px solid #f8ca6c;	
+	text-overflow: ellipsis;
+	overflow: hidden;
+	white-space: nowrap;
+}
+
+#msg {
+	margin: 0 auto;
+	padding: 5px;
+	border:1px solid #ddd;
+	border-radius: 10px;
+	background: #feffdd;
+	width: 30%;
+	transition: all 1s linear;
+}
+.hide {
+	opacity: 0;
+}
+#msg.info {
+	color: #6193c1;
+}
+#msg.error {
+	color: red;
+}
+#tasks_list .completed .text{
+	text-decoration: line-through;
+	color: #aaa;
+}
+/*input[type="checkbox"]:before {
+	content:"\2610";	
+	display: block;
+	position: relative;
+	left: -5px;
+	top:-15px;
+	font-size: 30px;
+	width: 25px;
+	height: 25px;
+	background: #fff;
+}
+.completed input[type="checkbox"]:before {
+	content:"\2611";	
+}*/
+
+/* For that multipage effect at the bottom using pseudo element */
+#tasks:after { 
+	content: "";
+	display: block;
+	border: 1px solid #ccc;
+	border-top: 0;
+	width: 97%;
+	height: 5px;
+	position: relative;
+	top:6px;
+	left: 1%;
+	box-shadow: 5px 5px 5px #ccc;
+}
+#footer {
+	text-align: center;
+	color: #ccc;
+}
