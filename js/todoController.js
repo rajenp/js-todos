@@ -23,7 +23,7 @@ var TODOView = function () {
 	this.init();
 };
 
-TODOView.TASK_TMPL = "<li title='{task}' id='{id}_li' class='{cls}'><input type='checkbox' {checked} id='{id}'> <span class='text'>{task}</span> <a href='javascript:void(0)' id='{id}_delete' class='dlt_icon'>⊗</a></li>";
+TODOView.TASK_TMPL = "<li title='{task}' id='{id}_li' class='{cls}'> <a id='{id}' href='javascript:void(0)' class='checkbox {checked}'></a> <span class='text'>{task}</span> <a href='javascript:void(0)' id='{id}_delete' class='dlt_icon'>⊗</a></li>";
 
 TODOView.EVENT_ADD_TASK = "ADD_TASK";
 
@@ -38,11 +38,9 @@ Extend(TODOView, EventTarget, {
 		list.addEventListener('click', function (evt) {
 			evt = evt || window.event;	
 			var target = evt.target || evt.srcElement;
-			if (target.id && target.type == "checkbox" && typeof target.checked !== "undefined") { //only act on checkboxes with id
-				var checked = target.checked;
-				//wait until we update it on server
-				target.checked = !target.checked;
-				me._onTaskChange(target.id, checked);	
+			if (target.id && target.className.indexOf("checkbox") >= 0) { //only act on checkboxes with id
+				var checked = target.className.indexOf("checked") >= 0;//checked;
+				me._onTaskChange(target.id, !checked); //toggle state	
 			} else if(target.id && target.id.indexOf("_delete") > 0) {
 				var taskId = target.id.split("_")[0];
 				me.notify(TODOView.EVENT_DELETE_TASK, taskId);
@@ -59,12 +57,11 @@ Extend(TODOView, EventTarget, {
 		}
 		var checkbox = $(id);
 		if (checkbox) {
-			checkbox.checked = !!complete;
+			checkbox.className = "checkbox " + (complete ? "checked" : "");
 		}
 	},
 	renderList: function (list) {
 		list = list || [];
-		//this.showFilter(!!list.length);
 		var dom = $("tasks_list");	
 		var html = [];
 		dom && $each(list, function(value) {
@@ -87,11 +84,9 @@ Extend(TODOView, EventTarget, {
 		if(dom && task) {
 			var elem = document.createElement("ul");
 			elem.innerHTML = $template(TODOView.TASK_TMPL, task);
-			dom.appendChild(elem.firstChild);
+			dom.insertBefore(elem.firstChild, dom.firstChild);
 			elem = null;
-			//this.showFilter(true);
 		}
-		//task && dom && (dom.innerHTML = $template(TODOView.TASK_TMPL, task) + dom.innerHTML);
 	},
 	clearTask: function (taskId) {
 		var task = $(taskId + "_li"); 
@@ -165,17 +160,6 @@ Extend(TODOController, EventTarget, {
 		this._view.showMessage("Fetching tasks...");
 		this._service.getTasks(new Callback(this.tasksReceived, this));
 	},
-	/*_filterList: function (tasks) {
-		var list = [], filter = this._filter;
-		$each(tasks, function(task){	
-			if (!filter || filter == 'A' || (filter == 'C' && task.complete) || (filter == 'P' && !task.complete)) {
-				list.push(task);
-			}
-		});	
-		this._view.renderList(list);
-		this._view.showMessage(list.length  + " task" + (list.length > 1 ? "s" : "")+" found");			
-		return list;
-	},*/
 	tasksReceived: function (response) {
 		var tasks = this._preProcessResponse(response);
 		if (tasks) {

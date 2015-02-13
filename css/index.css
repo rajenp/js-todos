@@ -94,7 +94,7 @@ body {
 	border:1px solid #ddd;
 	border-radius: 20px;
 	background: #feffdd;
-	width: 30%;
+	width: 48%;
 	transition: all 1s linear;
 }
 .hide {
@@ -110,21 +110,6 @@ body {
 	text-decoration: line-through;
 	color: #aaa;
 }
-/*input[type="checkbox"]:before {
-	content:"\2610";	
-	display: block;
-	position: relative;
-	left: -5px;
-	top:-15px;
-	font-size: 30px;
-	width: 25px;
-	height: 25px;
-	background: #fff;
-}
-.completed input[type="checkbox"]:before {
-	content:"\2611";	
-}*/
-
 /* For that multipage effect at the bottom using pseudo element */
 #tasks:after { 
 	content: "";
@@ -159,13 +144,22 @@ body {
 .filter a:hover, .filter a.active {
 	color: #bdd0e1;
 }
-input[type="checkbox"] {
-	font-size: 20px;
+.checkbox:before {
+	content: '✓';
+	color: transparent;
 }
-/*.filter input {
-	position: relative;
-	left: -34px;
-}*/
+.checkbox.checked:before {
+	content: '✓';
+	color: rgb(76, 161, 231);
+}
+.checkbox {
+	text-decoration: none;
+	border: 1px solid #ccc;
+	border-radius: 3px;
+	padding: 2px 4px;
+	background: #eee;
+	margin-right: 10px;
+}
 .none {
 	display: none;
 }
