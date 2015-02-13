@@ -70,7 +70,30 @@ Extend(TODOService, Object, {
  */
 
 var LocalTODOService = function () {
-	this._storage = {tasks:{}, count: 0};
+	this._storage = (function () {
+		var storage = {tasks:{}}, serialize = false;
+		if ('localStorage' in window && window['localStorage'] !== null) {
+			storage = window['localStorage'];
+			var tasks = storage["tasks"];
+			if (!tasks) {
+				storage["tasks"] = "{}";
+			}
+			serialize = true;
+		}
+		return {
+			get: function (key) {
+				var data = storage[key];
+				if (data &&serialize) {
+					data = JSON.parse(data);
+				}
+				return data;
+			},
+			set: function (key, value) {
+				if (!serialize) return; //For JS memory storage we, don't need to do this
+				storage[key] = serialize && typeof value !== "string" ? JSON.stringify(value) : value;	
+			}
+		}
+	})();
 };
 
 Extend(LocalTODOService, Object, {
@@ -80,29 +103,33 @@ Extend(LocalTODOService, Object, {
 	},
 	getTasks: function (callback) {
 		var tasks = [];
-		$each(this._storage.tasks, function (task) {
+		$each(this._storage.get("tasks"), function (task) {
 			tasks.push(task);
 		});
 		this._callback(callback, tasks);
 	},
 	addTask: function (task, callback) {
-		var tasks = this._storage.tasks;
+		var tasks = this._storage.get("tasks");
 		task.id = new Date().getTime();
 		tasks[task.id] = task;
+		this._storage.set("tasks", tasks);
 		this._callback(callback, task);
-		this._storage.count++;
 	},
 	updateTask: function (taskId, complete, callback) {
-		var task = this._storage.tasks[taskId];
+		var tasks = this._storage.get("tasks");
+		var task = tasks[taskId];
 		if (task) {
 			task.complete = complete;	
+			this._storage.set("tasks", tasks);
 		}
 		this._callback(callback, task);
 	},
 	clearTask: function(taskId, callback) {
-		var task = this._storage.tasks[taskId];
+		var tasks = this._storage.get("tasks");
+		var task = tasks[taskId];
 		if (task && task.complete) {
-			delete this._storage.tasks[taskId];	
+			delete tasks[taskId];	
+			this._storage.set("tasks", tasks);
 			this._callback(callback, task);
 		} else {
 			this._callback(callback, {error: "Task not cleared"});
@@ -110,7 +137,8 @@ Extend(LocalTODOService, Object, {
 	},
 	search: function (props, callback) {
 		var tasks = [];
-		$each(this._storage.tasks, function (task) {
+		var alltasks = this._storage.get("tasks");
+		$each(alltasks, function (task) {
 			var emptyProps = true, match = false;
 			$each(props, function(value, prop){
 				emptyProps = false;

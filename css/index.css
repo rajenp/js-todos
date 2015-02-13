@@ -21,6 +21,7 @@
 body {
 	padding: 0;
 	margin: 0;
+	background: #eee;
 }
 #layout {
 	width: 800px;
@@ -32,14 +33,15 @@ body {
 #logo {
 	font-family: cursive;
 	font-size: 100px;
-	color: #bdd0e1;
+	color: #9FC3D8;
 	width: 100%;
 }
 #tasks {
-	border: 1px solid #ccc;
+	border: 1px solid #ddd;
 	width: 50%;
-	margin: 20px auto;
-	box-shadow: 5px 5px 5px #ddd;
+	margin: 5px auto;
+	box-shadow: 5px 5px 15px #ddd;
+	background: #fff;
 }
 #new_task, #new_task_btn, .add_task td {
 	line-height: 25px;
@@ -67,7 +69,7 @@ body {
 	padding: 8px;
 	text-align: left;
 	text-indent: 12%;
-	border-bottom: 1px solid #f8ca6c;	
+	border-bottom: 1px solid #ffe6c3;	
 	text-overflow: ellipsis;
 	overflow: hidden;
 	white-space: nowrap;
@@ -82,7 +84,7 @@ body {
 	float: right;
 	text-indent: 0;
 	text-decoration: none;
-	color: #ff6822;
+	color: #FC846E;
 	font-size: 20px;
 	margin-right:20px;
 }
@@ -90,7 +92,7 @@ body {
 	margin: 0 auto;
 	padding: 5px;
 	border:1px solid #ddd;
-	border-radius: 10px;
+	border-radius: 20px;
 	background: #feffdd;
 	width: 30%;
 	transition: all 1s linear;
@@ -138,14 +140,15 @@ body {
 }
 #footer {
 	text-align: center;
-	color: #ccc;
+	color: #bbb;
+	font-size: 12px;
 }
 .new_task_bar {
 	padding: 10px 0;
 }
 .filter {
 	text-align: center;
-	padding: 2px;	
+	padding: 10px;	
 	background: whitesmoke;
 	font-size: small;
 }
