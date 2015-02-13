@@ -22,6 +22,8 @@
  * Remote TODO service using todoserver  
  */
 
+var IService = ["getTasks", "addTask", "updateTask", "clearTask", "search"];
+
 var TODOService = function () {
 	this._loader = AjaxLoader;
 };
@@ -52,6 +54,14 @@ Extend(TODOService, Object, {
 	clearTask: function (taskId, callback) {
 		var endPoint = TODOService.API_URL + "/" + taskId + "/delete";
 		this._loader.request({method: 'POST', url: endPoint, callback: callback});
+	},
+	search: function (props, callback) {
+		var endPoint = TODOService.API_URL + "/search";
+		this._loader.request({method: 'POST', data: props, url: endPoint, callback: callback,
+			headers:{
+				"Content-Type": "application/json"
+			}
+		});
 	}
 });
 
@@ -97,6 +107,17 @@ Extend(LocalTODOService, Object, {
 		} else {
 			this._callback(callback, {error: "Task not cleared"});
 		}
-		
+	},
+	search: function (props, callback) {
+		var tasks = [];
+		$each(this._storage.tasks, function (task) {
+			var emptyProps = true, match = false;
+			$each(props, function(value, prop){
+				emptyProps = false;
+				match = (task[prop] == value || (!value && typeof task[prop] === "undefined"));
+			});
+			(match || emptyProps) && tasks.push(task);
+		});
+		this._callback(callback, tasks);	
 	}
 });

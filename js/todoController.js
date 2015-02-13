@@ -143,8 +143,7 @@ Extend(TODOController, EventTarget, {
 	},
 	//Add 
 	addTask: function (data) {
-		delete this._filter;
-		this.applyFilter('A');
+		this.search({});
 		if (!data || !data.task) {
 			return this._view.showMessage("Please enter task", "error");
 		}
@@ -166,7 +165,7 @@ Extend(TODOController, EventTarget, {
 		this._view.showMessage("Fetching tasks...");
 		this._service.getTasks(new Callback(this.tasksReceived, this));
 	},
-	_filterList: function (tasks) {
+	/*_filterList: function (tasks) {
 		var list = [], filter = this._filter;
 		$each(tasks, function(task){	
 			if (!filter || filter == 'A' || (filter == 'C' && task.complete) || (filter == 'P' && !task.complete)) {
@@ -176,12 +175,12 @@ Extend(TODOController, EventTarget, {
 		this._view.renderList(list);
 		this._view.showMessage(list.length  + " task" + (list.length > 1 ? "s" : "")+" found");			
 		return list;
-	},
+	},*/
 	tasksReceived: function (response) {
 		var tasks = this._preProcessResponse(response);
 		if (tasks) {
 			this._model = tasks;
-			this._view.renderList(this._filterList(tasks));
+			this._view.renderList(/*this._filterList(*/tasks/*)*/);
 			this._view.showMessage(tasks.length  + " task" + (tasks.length > 1 ? "s" : "")+" found");	
 			this._listReady = true;
 		}
@@ -200,6 +199,7 @@ Extend(TODOController, EventTarget, {
 			this._view.showMessage("Task updated");
 		}	 
 	},
+	//clear
 	clearTask: function(taskId) {
 		this._service.clearTask(taskId, new Callback(this.taskCleared, this));			
 	},
@@ -210,9 +210,9 @@ Extend(TODOController, EventTarget, {
 			this._view.showMessage("Task cleared");
 		}	
 	},
-	applyFilter: function (filter) {
-		this._filter = filter;
-		this.getTasks();
+	//search
+	search: function (props) {
+		this._service.search(props, new Callback(this.tasksReceived, this));		
 	}
 });
 

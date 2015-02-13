@@ -16,7 +16,10 @@
 			<label for="new_task" class="label">Enter a Task:</label> <input autocomplete="off" placeholder="What do you have to do?" type="text" id="new_task"> <button id="new_task_btn" aria-label="Add Task" type="submit">Add</button>
 		</form>	
 		</div>
-		<div class="filter" id="filter"> <a id='f_A' href="javascript:void(0)" onclick="applyFilter('A')"> All</a> &#8226; <a id='f_P' href="javascript:void(0)" onclick="applyFilter('P')">Pending</a> &#8226; <a id='f_C' onclick="applyFilter('C');" href="javascript:void(0)">Completed </a></div>
+		<div class="filter" id="filter"> 
+		<a id='f_A' data-filter="" href="javascript:void(0)" onclick="applyFilter(this)"> All</a> &#8226; 
+		<a id='f_P' data-filter="false" href="javascript:void(0)" onclick="applyFilter(this)">Pending</a> &#8226; 
+		<a id='f_C' data-filter="true" onclick="applyFilter(this);" href="javascript:void(0)">Completed </a></div>
 		<ul id="tasks_list"></ul>
 		</div>	
 </div>
@@ -32,11 +35,12 @@
 		todoController.addTask({task: value});
 		return false;
 	};
-	var applyFilter = function (filter) {
+	var applyFilter = function (elem) {
 		activeFilterId && ($(activeFilterId).className = "");
-		activeFilterId = "f_"+filter;
-		$("f_"+filter).className = "active";
-		todoController.applyFilter(filter);
+		activeFilterId = elem.id;
+		elem.className = "active";
+		var value = elem.getAttribute("data-filter");
+		todoController.search(value ? {complete: value === "true"} : {});
 	};
 </script>
 </body> 	   
