@@ -116,7 +116,8 @@ var Extend = function(Child, Parent, prototypes) {
     Child.prototype.constructor = Parent;
     $each(prototypes, function(value, key) {
         Child.prototype[key] = value;
-    })
+    });
+    return Child; //Allow chaining
 };
 
 var EventTarget = function () {
@@ -136,6 +137,21 @@ Extend(EventTarget, Object, {
         this._events[name] = listeners;
     }
 });
+
+// Interface implemention
+Function.prototype.Impls = function(iFace) {
+    var me = this;
+    if (!$isArray(iFace)) {
+        throw new Error("Interface needs to be defined as an Array");
+    }
+    //make sure this function has all the methods required by this interface
+    $each(iFace, function(name) {
+        var method = me.prototype[name];
+        if (!method || typeof method !== "function") {
+            throw new Error("Missing interface implemention: " + name);       
+        }
+    });
+};
 
 //Simple templating
 var $template = function(str, data) {

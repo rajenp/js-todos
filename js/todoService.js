@@ -22,6 +22,7 @@
  * Remote TODO service using todoserver  
  */
 
+/* Service Interface to be implemented by a Service */
 var IService = ["getTasks", "addTask", "updateTask", "clearTask", "search"];
 
 var TODOService = function () {
@@ -63,7 +64,7 @@ Extend(TODOService, Object, {
 			}
 		});
 	}
-});
+}).Impls(IService);
 
 /**
  * Local TODO storage. TODOs are cleared on page refresh. 
@@ -148,4 +149,4 @@ Extend(LocalTODOService, Object, {
 		});
 		this._callback(callback, tasks);	
 	}
-});
+}).Impls(IService);
