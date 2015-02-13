@@ -11,9 +11,12 @@
 	<div id="logo"alt="Logo">todos</div>
 		<div id="msg"></div>
 		<div id="tasks">
+		<div class="new_task_bar">
 		<form onsubmit="return onSubmit();">
 			<label for="new_task" class="label">Enter a Task:</label> <input autocomplete="off" placeholder="What do you have to do?" type="text" id="new_task"> <button id="new_task_btn" aria-label="Add Task" type="submit">Add</button>
 		</form>	
+		</div>
+		<div class="filter" id="filter"> <a id='f_A' href="javascript:void(0)" onclick="applyFilter('A')"> All</a> &#8226; <a id='f_P' href="javascript:void(0)" onclick="applyFilter('P')">Pending</a> &#8226; <a id='f_C' onclick="applyFilter('C');" href="javascript:void(0)">Completed </a></div>
 		<ul id="tasks_list"></ul>
 		</div>	
 </div>
@@ -22,12 +25,18 @@
 <script src="js/todoService.js"></script>
 <script src="js/todoController.js"></script>
 <script>
-	var todoController = new TODOController();
+	var todoController = new TODOController(), activeFilterId = "";
 	todoController.launch();
 	var onSubmit = function () {
 		var value = $("new_task").value;
 		todoController.addTask({task: value});
 		return false;
+	};
+	var applyFilter = function (filter) {
+		activeFilterId && ($(activeFilterId).className = "");
+		activeFilterId = "f_"+filter;
+		$("f_"+filter).className = "active";
+		todoController.applyFilter(filter);
 	};
 </script>
 </body> 	   

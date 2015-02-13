@@ -64,6 +64,7 @@ Extend(TODOView, EventTarget, {
 	},
 	renderList: function (list) {
 		list = list || [];
+		//this.showFilter(!!list.length);
 		var dom = $("tasks_list");	
 		var html = [];
 		dom && $each(list, function(value) {
@@ -88,6 +89,7 @@ Extend(TODOView, EventTarget, {
 			elem.innerHTML = $template(TODOView.TASK_TMPL, task);
 			dom.appendChild(elem.firstChild);
 			elem = null;
+			//this.showFilter(true);
 		}
 		//task && dom && (dom.innerHTML = $template(TODOView.TASK_TMPL, task) + dom.innerHTML);
 	},
@@ -107,6 +109,12 @@ Extend(TODOView, EventTarget, {
 				div.className = "hide";
 			}, 2000); //2 seconds delay
 		}
+	},
+	showFilter: function(show) {
+		var div = $("filter");
+		if (div) {
+			div.className = show ? "filter" : "hide";
+		}	
 	}
 });
 
@@ -119,13 +127,15 @@ Extend(TODOController, EventTarget, {
 		this._view.listen(TODOView.EVENT_ADD_TASK, new Callback(this.addTask, this));
 		this._view.listen(TODOView.EVENT_TASK_CHANGED, new Callback(this.updateTask, this));
 		this._view.listen(TODOView.EVENT_DELETE_TASK, new Callback(this.clearTask, this));
+		this._model = [];
 	},
 	_preProcessResponse: function (response) {	
 		var error = !response || !response.response || response.error || response.response.error;
+		var msg = response.error || response.response.error;
 		if (!error) {
 			return typeof response.response === "string" ? JSON.parse(response.response) : response.response;
 		} 
-		this._view.showMessage("Error: " +  (error || "Something went wrong!"), "error");
+		this._view.showMessage("Error: " +  (msg || "Something went wrong!"), "error");
 	},
 	launch: function () {
 		this.init();
@@ -133,6 +143,8 @@ Extend(TODOController, EventTarget, {
 	},
 	//Add 
 	addTask: function (data) {
+		delete this._filter;
+		this.applyFilter('A');
 		if (!data || !data.task) {
 			return this._view.showMessage("Please enter task", "error");
 		}
@@ -154,10 +166,22 @@ Extend(TODOController, EventTarget, {
 		this._view.showMessage("Fetching tasks...");
 		this._service.getTasks(new Callback(this.tasksReceived, this));
 	},
+	_filterList: function (tasks) {
+		var list = [], filter = this._filter;
+		$each(tasks, function(task){	
+			if (!filter || filter == 'A' || (filter == 'C' && task.complete) || (filter == 'P' && !task.complete)) {
+				list.push(task);
+			}
+		});	
+		this._view.renderList(list);
+		this._view.showMessage(list.length  + " task" + (list.length > 1 ? "s" : "")+" found");			
+		return list;
+	},
 	tasksReceived: function (response) {
 		var tasks = this._preProcessResponse(response);
 		if (tasks) {
-			this._view.renderList(tasks);
+			this._model = tasks;
+			this._view.renderList(this._filterList(tasks));
 			this._view.showMessage(tasks.length  + " task" + (tasks.length > 1 ? "s" : "")+" found");	
 			this._listReady = true;
 		}
@@ -185,6 +209,10 @@ Extend(TODOController, EventTarget, {
 			this._view.clearTask(task.id);
 			this._view.showMessage("Task cleared");
 		}	
+	},
+	applyFilter: function (filter) {
+		this._filter = filter;
+		this.getTasks();
 	}
 });
 

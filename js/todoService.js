@@ -48,6 +48,10 @@ Extend(TODOService, Object, {
 				"Content-Type": "application/json"
 			}
 		});
+	},
+	clearTask: function (taskId, callback) {
+		var endPoint = TODOService.API_URL + "/" + taskId + "/delete";
+		this._loader.request({method: 'POST', url: endPoint, callback: callback});
 	}
 });
 
