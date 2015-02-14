@@ -1,47 +1,62 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>todos: simple task manager</title>
     <link rel="stylesheet" type="text/css" href="css/index.css">
     <meta charset='utf-8'>
     <meta name="author" content="Rajendra Patil">
-</head>    
+</head>
+
 <body>
-<div id="layout">
-	<div id="logo"alt="Logo">todos</div>
-		<div id="msg"></div>
-		<div id="tasks">
-		<div class="new_task_bar">
-		<form onsubmit="return onSubmit();">
-			<label for="new_task" class="label">Enter a Task:</label> <input autocomplete="off" placeholder="What do you have to do?" type="text" id="new_task"> <button id="new_task_btn" aria-label="Add Task" type="submit">Add</button>
-		</form>	
-		</div>
-		<div class="filter" id="filter"> 
-		<a id='f_A' data-filter="" href="javascript:void(0)" onclick="applyFilter(this)"> All</a> &#8226; 
-		<a id='f_P' data-filter="false" href="javascript:void(0)" onclick="applyFilter(this)">Pending</a> &#8226; 
-		<a id='f_C' data-filter="true" onclick="applyFilter(this);" href="javascript:void(0)">Completed </a></div>
-		<ul id="tasks_list"></ul>
-		</div>	
-</div>
-<div id="footer">Simple TODO application built using vanilla JS, HTML and CSS <br/><br/> <a href="https://github.com/rpatil26/js-todos">https://github.com/rpatil26/js-todos</a></div>
-<script src="js/mylib.js"></script>
-<script src="js/todoService.js"></script>
-<script src="js/todoController.js"></script>
-<script>
-	var todoController = new TODOController(), activeFilterId = "";
-	todoController.launch();
-	var onSubmit = function () {
-		var value = $("new_task").value;
-		todoController.addTask({task: value});
-		return false;
-	};
-	var applyFilter = function (elem) {
-		activeFilterId && ($(activeFilterId).className = "");
-		activeFilterId = elem.id;
-		elem.className = "active";
-		var value = elem.getAttribute("data-filter");
-		todoController.search(value ? {complete: value === "true"} : {});
-	};
-</script>
-</body> 	   
+    <div id="layout">
+        <div id="logo" alt="Logo">todos</div>
+        <div id="msg"></div>
+        <div id="tasks">
+            <div class="new_task_bar">
+                <form onsubmit="return onSubmit();">
+                    <label for="new_task" class="label">Enter a Task:</label>
+                    <input autocomplete="off" placeholder="What do you have to do?" type="text" id="new_task">
+                    <button id="new_task_btn" aria-label="Add Task" type="submit">Add</button>
+                </form>
+            </div>
+            <div class="filter" id="filter">
+                <a data-filter="" href="javascript:void(0)" onclick="applyFilter(this)"> All</a> &#8226;
+                <a data-filter="false" href="javascript:void(0)" onclick="applyFilter(this)">Pending</a> &#8226;
+                <a data-filter="true" onclick="applyFilter(this);" href="javascript:void(0)">Completed </a>
+            </div>
+            <ul id="tasks_list"></ul>
+        </div>
+    </div>
+    <div id="footer">Simple TODO application built using vanilla JS, HTML and CSS
+        <br/>
+        <br/>
+        <a href="https://github.com/rpatil26/js-todos">https://github.com/rpatil26/js-todos</a>
+    </div>
+    <script src="js/mylib.js"></script>
+    <script src="js/todoService.js"></script>
+    <script src="js/todoController.js"></script>
+    <script>
+    var todoController = new TODOController(),
+        activeFilterId = "";
+    todoController.launch();
+    var onSubmit = function() {
+        var value = $("new_task").value;
+        todoController.addTask({
+            task: value
+        });
+        return false;
+    };
+    var applyFilter = function(elem) {
+        activeFilterId && ($(activeFilterId).className = "");
+        activeFilterId = elem.id;
+        elem.className = "active";
+        var value = elem.getAttribute("data-filter");
+        todoController.search(value ? {
+            complete: value === "true"
+        } : {});
+    };
+    </script>
+</body>
+
 </html>

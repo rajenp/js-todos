@@ -15,12 +15,12 @@
  */
 
 /**
- * 
+ *
  * @author Rajendra Patil
  */
 
 var $ = function(id) {
-	return document.getElementById(id);
+    return document.getElementById(id);
 };
 
 //Simple callback - executable function
@@ -38,7 +38,7 @@ var $isArray = function(obj) {
 //Loop on each element of map or array
 var $each = function(obj, callback) {
     if ($isArray(obj)) {
-         for (var idx = 0, len = obj.length; idx < len; idx++) {
+        for (var idx = 0, len = obj.length; idx < len; idx++) {
             callback(obj[idx], idx);
         }
     } else {
@@ -54,22 +54,16 @@ var $each = function(obj, callback) {
 var AjaxLoader = function() {
 
     if (typeof XMLHttpRequest == "undefined")
-        XMLHttpRequest = function () {
+        XMLHttpRequest = function() {
             try {
                 return new ActiveXObject("Msxml2.XMLHTTP.6.0");
-            }
-            catch (e) {
-            }
+            } catch (e) {}
             try {
                 return new ActiveXObject("Msxml2.XMLHTTP.3.0");
-            }
-            catch (e) {
-            }
+            } catch (e) {}
             try {
                 return new ActiveXObject("Microsoft.XMLHTTP");
-            }
-            catch (e) {
-            }
+            } catch (e) {}
             throw new Error("Browser doesn't support XMLHttpRequest");
         };
 
@@ -83,7 +77,7 @@ var AjaxLoader = function() {
             var headers = params.headers || [];
 
             var xhr = new XMLHttpRequest();
-            try { 
+            try {
                 xhr.open(method, url, true);
                 if (headers) {
                     $each(headers, function(value, key) {
@@ -95,7 +89,11 @@ var AjaxLoader = function() {
                         if (xhr.status === 200) {
                             callback.exec ? callback.exec(xhr) : callback(xhr);
                         } else {
-                            callback.exec ? callback.exec({error: "Unable to connect with todoserver"}) : callback({error: "Unable to connect with todoserver"});
+                            callback.exec ? callback.exec({
+                                error: "Unable to connect with todoserver"
+                            }) : callback({
+                                error: "Unable to connect with todoserver"
+                            });
                         }
                     }
                 };
@@ -104,7 +102,11 @@ var AjaxLoader = function() {
                 }
                 xhr.send(data);
             } catch (ex) {
-                callback.exec ? callback.exec({error:ex}) : callback({error:ex});
+                callback.exec ? callback.exec({
+                    error: ex
+                }) : callback({
+                    error: ex
+                });
             }
         }
     }
@@ -120,20 +122,20 @@ var Extend = function(Child, Parent, prototypes) {
     return Child; //Allow chaining
 };
 
-var EventTarget = function () {
+var EventTarget = function() {
     this._events = {};
 };
 
 Extend(EventTarget, Object, {
-    notify: function (name, data) {
-        var listeners =  this._events[name] || [];
+    notify: function(name, data) {
+        var listeners = this._events[name] || [];
         $each(listeners, function(callback) {
-            callback.exec ? callback.exec(data) : callback(data);   
+            callback.exec ? callback.exec(data) : callback(data);
         });
     },
-    listen: function (name, callback) {
+    listen: function(name, callback) {
         var listeners = this._events[name] || [];
-        listeners.push(callback);   
+        listeners.push(callback);
         this._events[name] = listeners;
     }
 });
@@ -148,7 +150,7 @@ Function.prototype.Impls = function(iFace) {
     $each(iFace, function(name) {
         var method = me.prototype[name];
         if (!method || typeof method !== "function") {
-            throw new Error("Missing interface implemention: " + name);       
+            throw new Error("Missing interface implemention: " + name);
         }
     });
 };
@@ -160,4 +162,3 @@ var $template = function(str, data) {
         return data[p1] || "";
     })
 };
-

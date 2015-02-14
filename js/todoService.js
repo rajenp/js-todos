@@ -19,134 +19,164 @@
  */
 
 /**
- * Remote TODO service using todoserver  
+ * Remote TODO service using todoserver
  */
 
 /* Service Interface to be implemented by a Service */
 var IService = ["getTasks", "addTask", "updateTask", "clearTask", "search"];
 
-var TODOService = function () {
-	this._loader = AjaxLoader;
+var TODOService = function() {
+    this._loader = AjaxLoader;
 };
 
-TODOService.API_URL="http://localhost:9898/todo/tasks";
+TODOService.API_URL = "http://localhost:9898/todo/tasks";
 
 Extend(TODOService, Object, {
-	getTasks: function (callback) {
-		var endPoint = TODOService.API_URL;
-		this._loader.request({method: 'GET', url: endPoint, callback: callback});
-	},
-	addTask: function (task, callback) {
-		var endPoint = TODOService.API_URL + "/create";
-		this._loader.request({method: 'POST', data: task, url: endPoint, callback: callback, 
-			headers:{
-				"Content-Type": "application/json"
-			}
-		});
-	},
-	updateTask: function (taskId, complete, callback) {
-		var endPoint = TODOService.API_URL + "/" + taskId + "/edit";
-		this._loader.request({method: 'POST', data: {complete: complete}, url: endPoint, callback: callback, 
-			headers:{
-				"Content-Type": "application/json"
-			}
-		});
-	},
-	clearTask: function (taskId, callback) {
-		var endPoint = TODOService.API_URL + "/" + taskId + "/delete";
-		this._loader.request({method: 'POST', url: endPoint, callback: callback});
-	},
-	search: function (props, callback) {
-		var endPoint = TODOService.API_URL + "/search";
-		this._loader.request({method: 'POST', data: props, url: endPoint, callback: callback,
-			headers:{
-				"Content-Type": "application/json"
-			}
-		});
-	}
+    getTasks: function(callback) {
+        var endPoint = TODOService.API_URL;
+        this._loader.request({
+            method: 'GET',
+            url: endPoint,
+            callback: callback
+        });
+    },
+    addTask: function(task, callback) {
+        var endPoint = TODOService.API_URL + "/create";
+        this._loader.request({
+            method: 'POST',
+            data: task,
+            url: endPoint,
+            callback: callback,
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+    },
+    updateTask: function(taskId, complete, callback) {
+        var endPoint = TODOService.API_URL + "/" + taskId + "/edit";
+        this._loader.request({
+            method: 'POST',
+            data: {
+                complete: complete
+            },
+            url: endPoint,
+            callback: callback,
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+    },
+    clearTask: function(taskId, callback) {
+        var endPoint = TODOService.API_URL + "/" + taskId + "/delete";
+        this._loader.request({
+            method: 'POST',
+            url: endPoint,
+            callback: callback
+        });
+    },
+    search: function(props, callback) {
+        var endPoint = TODOService.API_URL + "/search";
+        this._loader.request({
+            method: 'POST',
+            data: props,
+            url: endPoint,
+            callback: callback,
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+    }
 }).Impls(IService);
 
 /**
- * Local TODO storage. TODOs are cleared on page refresh. 
+ * Local TODO storage. TODOs are cleared on page refresh.
  */
 
-var LocalTODOService = function () {
-	this._storage = (function () {
-		var storage = {tasks:{}}, serialize = false;
-		if ('localStorage' in window && window['localStorage'] !== null) {
-			storage = window['localStorage'];
-			var tasks = storage["tasks"];
-			if (!tasks) {
-				storage["tasks"] = "{}";
-			}
-			serialize = true;
-		}
-		return {
-			get: function (key) {
-				var data = storage[key];
-				if (data &&serialize) {
-					data = JSON.parse(data);
-				}
-				return data;
-			},
-			set: function (key, value) {
-				if (!serialize) return; //For JS memory storage we, don't need to do this
-				storage[key] = serialize && typeof value !== "string" ? JSON.stringify(value) : value;	
-			}
-		}
-	})();
+var LocalTODOService = function() {
+    this._storage = (function() {
+        var storage = {
+                tasks: {}
+            },
+            serialize = false;
+        if ('localStorage' in window && window['localStorage'] !== null) {
+            storage = window['localStorage'];
+            var tasks = storage["tasks"];
+            if (!tasks) {
+                storage["tasks"] = "{}";
+            }
+            serialize = true;
+        }
+        return {
+            get: function(key) {
+                var data = storage[key];
+                if (data && serialize) {
+                    data = JSON.parse(data);
+                }
+                return data;
+            },
+            set: function(key, value) {
+                if (!serialize) return; //For JS memory storage we, don't need to do this
+                storage[key] = serialize && typeof value !== "string" ? JSON.stringify(value) : value;
+            }
+        }
+    })();
 };
 
 Extend(LocalTODOService, Object, {
-	_callback: function(cb, resp) {
-		resp = {response:resp};
-		cb && (cb.exec ? cb.exec(resp) : cb(resp));
-	},
-	getTasks: function (callback) {
-		var tasks = [];
-		$each(this._storage.get("tasks"), function (task) {
-			tasks.push(task);
-		});
-		this._callback(callback, tasks);
-	},
-	addTask: function (task, callback) {
-		var tasks = this._storage.get("tasks");
-		task.id = new Date().getTime();
-		tasks[task.id] = task;
-		this._storage.set("tasks", tasks);
-		this._callback(callback, task);
-	},
-	updateTask: function (taskId, complete, callback) {
-		var tasks = this._storage.get("tasks");
-		var task = tasks[taskId];
-		if (task) {
-			task.complete = complete;	
-			this._storage.set("tasks", tasks);
-		}
-		this._callback(callback, task);
-	},
-	clearTask: function(taskId, callback) {
-		var tasks = this._storage.get("tasks");
-		var task = tasks[taskId];
-		if (task && task.complete) {
-			delete tasks[taskId];	
-			this._storage.set("tasks", tasks);
-			this._callback(callback, task);
-		} else {
-			this._callback(callback, {error: "Task not cleared"});
-		}
-	},
-	search: function (props, callback) {
-		var tasks = [];
-		var alltasks = this._storage.get("tasks");
-		$each(alltasks, function (task) {
-			var emptyProps = true, match = false;
-			$each(props, function(value, prop){
-				emptyProps = false;
-				match = (task[prop] == value || (!value && typeof task[prop] === "undefined"));
-			});
-			(match || emptyProps) && tasks.push(task);
-		});
-		this._callback(callback, tasks);	
-	}
+    _callback: function(cb, resp) {
+        resp = {
+            response: resp
+        };
+        cb && (cb.exec ? cb.exec(resp) : cb(resp));
+    },
+    getTasks: function(callback) {
+        var tasks = [];
+        $each(this._storage.get("tasks"), function(task) {
+            tasks.push(task);
+        });
+        this._callback(callback, tasks);
+    },
+    addTask: function(task, callback) {
+        var tasks = this._storage.get("tasks");
+        task.id = new Date().getTime();
+        tasks[task.id] = task;
+        this._storage.set("tasks", tasks);
+        this._callback(callback, task);
+    },
+    updateTask: function(taskId, complete, callback) {
+        var tasks = this._storage.get("tasks");
+        var task = tasks[taskId];
+        if (task) {
+            task.complete = complete;
+            this._storage.set("tasks", tasks);
+        }
+        this._callback(callback, task);
+    },
+    clearTask: function(taskId, callback) {
+        var tasks = this._storage.get("tasks");
+        var task = tasks[taskId];
+        if (task && task.complete) {
+            delete tasks[taskId];
+            this._storage.set("tasks", tasks);
+            this._callback(callback, task);
+        } else {
+            this._callback(callback, {
+                error: "Task not cleared"
+            });
+        }
+    },
+    search: function(props, callback) {
+        var tasks = [];
+        var alltasks = this._storage.get("tasks");
+        $each(alltasks, function(task) {
+            var emptyProps = true,
+                match = false;
+            $each(props, function(value, prop) {
+                emptyProps = false;
+                match = (task[prop] == value || (!value && typeof task[prop] === "undefined"));
+            });
+            (match || emptyProps) && tasks.push(task);
+        });
+        this._callback(callback, tasks);
+    }
 }).Impls(IService);
