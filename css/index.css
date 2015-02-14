@@ -23,8 +23,9 @@ body {
     background: #eee;
 }
 #layout {
-    width: 800px;
-    margin: 5% auto;
+    width: 90%;
+    max-width: 750px;
+    margin: 0 auto;
 }
 #logo, form, #msg {
     text-align: center;
@@ -33,11 +34,9 @@ body {
     font-family: cursive;
     font-size: 100px;
     color: #9FC3D8;
-    width: 100%;
 }
 #tasks {
     border: 1px solid #ddd;
-    width: 50%;
     margin: 5px auto;
     box-shadow: 5px 5px 15px #ddd;
     background: #fff;
@@ -46,7 +45,7 @@ body {
     line-height: 25px;
 }
 #new_task {
-    width: 180px;
+    width: 40%;
     text-indent: 5px;
 }
 #tasks .label {
@@ -59,6 +58,8 @@ body {
     padding-bottom: 10px;
     margin: 0 auto;
     width: 100%;
+    height: 38vh;
+    overflow: scroll;
 }
 #tasks_list li:first-child, .filter {
     border-top: 1px solid #bdd0e1;
@@ -87,6 +88,7 @@ body {
     color: #FC846E;
     font-size: 20px;
     right: 20px;
+    padding: 0 5px;
 }
 #msg {
     margin: 0 auto;
@@ -128,6 +130,7 @@ body {
     text-align: center;
     color: #bbb;
     font-size: 12px;
+    padding: 20px;
 }
 .new_task_bar {
     padding: 10px 0;
@@ -158,8 +161,10 @@ body {
     border: 1px solid #ccc;
     border-radius: 3px;
     padding: 2px 4px;
-    background: #eee;
     margin-right: 10px;
+}
+.checkbox.checked {
+    background: #eee;
 }
 .none {
     display: none;

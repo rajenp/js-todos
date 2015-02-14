@@ -6,6 +6,7 @@
     <link rel="stylesheet" type="text/css" href="css/index.css">
     <meta charset='utf-8'>
     <meta name="author" content="Rajendra Patil">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 
 <body>
@@ -21,17 +22,17 @@
                 </form>
             </div>
             <div class="filter" id="filter">
-                <a data-filter="" href="javascript:void(0)" onclick="applyFilter(this)"> All</a> &#8226;
-                <a data-filter="false" href="javascript:void(0)" onclick="applyFilter(this)">Pending</a> &#8226;
-                <a data-filter="true" onclick="applyFilter(this);" href="javascript:void(0)">Completed </a>
+                <a id='all_l' data-filter="" href="javascript:void(0)" onclick="applyFilter(this)"> All</a> &#8226;
+                <a id='all_p' data-filter="false" href="javascript:void(0)" onclick="applyFilter(this)">Pending</a> &#8226;
+                <a id='all_c' data-filter="true" onclick="applyFilter(this);" href="javascript:void(0)">Completed </a>
             </div>
             <ul id="tasks_list"></ul>
         </div>
-    </div>
-    <div id="footer">Simple TODO application built using vanilla JS, HTML and CSS
-        <br/>
-        <br/>
-        <a href="https://github.com/rpatil26/js-todos">https://github.com/rpatil26/js-todos</a>
+        <div id="footer">Simple TODO application built using vanilla JS, HTML and CSS
+            <br/>
+            <br/>
+            <a href="https://github.com/rpatil26/js-todos">https://github.com/rpatil26/js-todos</a>
+        </div>
     </div>
     <script src="js/mylib.js"></script>
     <script src="js/todoService.js"></script>
