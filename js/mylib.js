@@ -99,7 +99,7 @@ var AjaxLoader = function() {
                         }
                     }
                 };
-                if(typeof data === "object") {
+                if (typeof data === "object") {
                     data = JSON.stringify(data);
                 }
                 xhr.send(data);

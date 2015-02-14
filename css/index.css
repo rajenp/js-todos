@@ -69,10 +69,12 @@ body {
 	padding: 8px;
 	text-align: left;
 	text-indent: 12%;
-	border-bottom: 1px solid #ffe6c3;	
+	border-bottom: 1px solid #ffe6c3;
 	text-overflow: ellipsis;
 	overflow: hidden;
 	white-space: nowrap;
+	position: relative;
+	padding-right: 40px;
 }
 #tasks_list li.completed .dlt_icon {
 	visibility: visible;
@@ -81,12 +83,12 @@ body {
 	visibility: hidden;
 }
 #tasks_list .dlt_icon {
-	float: right;
+	position: absolute;
 	text-indent: 0;
 	text-decoration: none;
 	color: #FC846E;
 	font-size: 20px;
-	margin-right:20px;
+	right: 20px;
 }
 #msg {
 	margin: 0 auto;
