@@ -17,7 +17,7 @@
 /**
  * Node JS based Simple TODO server 
  * @author Rajendra Patil
- * On the similar lines of what nzakas has using express. 
+ * On the similar lines of what nzakas has done using express. 
  * This implementation doesn't use express 
  */
 
