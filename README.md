@@ -13,6 +13,7 @@ Simple TODO application built using vanilla JS, HTML and CSS
 * Keyboard navigation and accessibility
 * Task filter by state - All, Pending (incomplete) or Completed ones
 * Provides visual feedback with light animation 
+* Resonsive and renders well across devices
 
 # Technical
 * Implemented tiny js lib for common things
