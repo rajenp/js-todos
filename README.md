@@ -28,7 +28,7 @@ Simple TODO application built using vanilla JS, HTML and CSS
 * Custom (non native) checkbox using CSS, HTML entity and anchor
 
 # Demo (localStorage)
-<p align="center">https://rawgit.com/rpatil26/js-todos/master/index.html</p> 
+**https://rawgit.com/rpatil26/js-todos/master/index.html**
 
 # Screenshot
 ![alt screenshot](https://raw.githubusercontent.com/rpatil26/js-todos/master/screenshot.png)
