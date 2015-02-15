@@ -20,82 +20,172 @@
  * This is inspiration from nzakas's code but this is my own enhanced implementation.
  * This implementation doesn't use express or has no dependency on any other module.
  */
+(function() {
+    "use strict";
+    var http = require("http"),
+        tasks = {},
+        result404 = {
+            code: 404
+        },
+        result501 = {
+            code: 501
+        };
 
-var http = require('http');
-var tasks = {},
-    query;
+    var SimpleServer = function() {
+        var Helper = {
+            headers: {
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
+                "Access-Control-Allow-Headers": "Content-Type"
+            },
+            parseUrl: function(url, routePath) {
+                var paramNames = [],
+                    params = {},
+                    route, match, id = 0;
+                route = routePath.replace(/\/\:([^\:\/]+)/img, function() {
+                    paramNames.push(arguments[1]);
+                    return "/([^\/]+)";
+                });
+                route += "$";
+                match = url.match(route);
+                if (match) {
+                    match.shift();
+                    match.forEach(function(value) {
+                        params[paramNames[id++]] = value;
+                    });
+                    return params;
+                }
+            },
+            onRequestBody: function(req, callback) {
+                var fullBody = "",
+                    data;
+                req.on("data", function(chunk) {
+                    fullBody += chunk.toString();
 
-var setCORSHeaders = function(res) {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-}
+                });
+                req.on("end", function() {
+                    data = fullBody && JSON.parse(fullBody);
 
-//Extract Body as JSON
-var extractBody = function(req, res, callback) {
-    var fullBody = '',
-        data, method = req.method;
-    if (method === 'POST') {
-        req.on('data', function(chunk) {
-            fullBody += chunk.toString();
-        });
-        req.on('end', function() {
-            data = fullBody && JSON.parse(fullBody);
-            callback(data);
-        });
-
-    } else {
-        setCORSHeaders(res);
-        res.writeHead(405, "Method Not Allowed", {
-            'Content-Type': 'application/json'
-        });
-        res.end();
-    }
-};
-
-//Send Object as JSON string back to client
-var writeJSON = function(data, res) {
-    setCORSHeaders(res);
-    res.writeHead(200, "OK", {
-        'Content-Type': 'application/json'
-    });
-    var responseData = JSON.stringify(data);
-    res.write(responseData);
-    res.end();
-};
-
-//Simple server implementation
-http.createServer(function(req, res) {
-    var aTask;
-    console.log(req.url);
-
-    // Reply OK to OPTIONS method
-    if (req.method === 'OPTIONS') {
-        setCORSHeaders(res);
-        res.writeHead(200, "OK", {
-            'Content-Type': 'application/json'
-        });
-        res.end();
-        return;
-    }
-    if (req.url === '/todo/tasks') { // Route /tasks
-        var list = Object.keys(tasks).map(function(key) {
-            return tasks[key];
-        });
-        writeJSON(list, res);
-    } else if (req.url === '/todo/tasks/create') { //Route /create
-        extractBody(req, res, function(data) {
-            if (data) {
-                data.id = new Date().getTime();
-                tasks[data.id] = data;
-                writeJSON(data, res);
+                    callback({
+                        data: data
+                    });
+                });
+            },
+            send404: function(res) {
+                res.writeHead(404, "Not Found", this.headers);
+                res.end();
+            },
+            send405: function(res) {
+                res.writeHead(405, "Method Not Allowed", this.headers);
+                res.end();
+            },
+            sendJSON: function(res, anObject) {
+                res.write(JSON.stringify(anObject));
+                res.end();
+            },
+            sendOK: function(res) {
+                res.writeHead(200, "OK", this.headers);
+                res.end();
+            },
+            sendResult: function(res, result) {
+                result = result || result404;
+                result.message = result.message || http.STATUS_CODES[result.code];
+                console.log(result.code);
+                if (result.data && typeof result.data === "object") {
+                    res.setHeader("Content-Type", "application/json");
+                }
+                res.writeHead(result.code, result.message, Helper.headers);
+                if (!result.data) {
+                    res.end();
+                } else {
+                    if (typeof result.data === "object") {
+                        Helper.sendJSON(res, result.data);
+                    } else {
+                        res.write(result.data);
+                        res.end();
+                    }
+                }
             }
-        });
-    } else if (req.url === '/todo/tasks/search') { //Route /search
-        extractBody(req, res, function(queryMap) { // {prop: value, prop1: value1}
-            var queryKeys = queryMap && Object.keys(queryMap),
-                list = [];
-            console.log("Query ", queryMap);
+        };
+        var routes = [];
+        return {
+
+            onRoute: function(routePath, callback) {
+                routes.push({
+                    path: routePath,
+                    handler: callback
+                });
+                return this;
+            },
+            process: function(req, res) {
+                //start matching routes in order and start serving
+                var index = 0,
+                    length = routes.length,
+                    route, result = result404;
+                var callback = function(body) {
+                    req.body = body.data; //inject body
+                    result = route.handler(req, res);
+                    result = result || result501;
+                    Helper.sendResult(res, result);
+                };
+                while (index < length) {
+                    route = routes[index];
+                    var pathParams = Helper.parseUrl(req.url, route.path);
+                    if (pathParams) { //this url matches the route
+                        req.pathParams = pathParams; //inject path params
+                        console.log("Router ", route.path, " matched for url ", req.url);
+                        if (req.method === "OPTIONS") {
+                            result = {
+                                code: 200
+                            };
+                            break;
+                        }
+                        if (req.method === "POST") {
+                            Helper.onRequestBody(req, callback);
+                            return;
+                        } else {
+                            callback({});
+                            return;
+                        }
+                        break;
+                    }
+                    index++;
+                }
+                Helper.sendResult(res, result);
+            }
+        };
+    };
+
+    //Simple server implementation
+    var server = new SimpleServer()
+        .onRoute("/todo/tasks", function() {
+            var data = Object.keys(tasks).map(function(key) {
+                return tasks[key];
+            });
+            return {
+                code: 200,
+                data: data
+            };
+        })
+        .onRoute("/todo/tasks/create", function(req) {
+            var task = req.body;
+            if (!task) {
+                return {
+                    code: 404
+                };
+            }
+            task.id = new Date().getTime();
+            tasks[task.id] = task;
+            return {
+                code: 200,
+                data: task
+            };
+        })
+        .onRoute("/todo/tasks/search", function(req) {
+            var queryMap = req.body,
+                queryKeys = queryMap && Object.keys(queryMap),
+                list = [],
+                aTask;
             if (!queryKeys || !queryKeys.length) {
                 list = Object.keys(tasks).map(function(key) {
                     return tasks[key];
@@ -105,45 +195,76 @@ http.createServer(function(req, res) {
                     aTask = tasks[key];
                     return queryKeys.some(function(prop) {
                         var checkValue = queryMap[prop];
-                        return (aTask[prop] == checkValue || (!checkValue && typeof aTask[prop] === "undefined"));
+                        return (aTask[prop] === checkValue || (!checkValue && typeof aTask[prop] === "undefined"));
                     });
                 }).map(function(validKey) { //matching keys
                     return tasks[validKey];
                 });
             }
-            writeJSON(list, res);
-        });
-    } else {
-        var regex = new RegExp("/todo/tasks/([0-9]+)/(edit|delete)");
-        var match = req.url.match(regex),
-            taskId = match && match[1],
-            operation = match && match[2],
-            aTask = tasks[taskId];
-
-        if (!aTask || !operation.match(/edit|delete/)) {
-            setCORSHeaders(res);
-            res.writeHead(404, "Not found");
-            res.end();
-            return;
-        }
-
-        if (operation === 'edit') { //Route /edit
-            extractBody(req, res, function(data) {
-                if (data) {
-                    Object.keys(data).forEach(function(key) {
-                        if (key !== 'id') { //id update not allowed
-                            aTask[key] = data[key];
-                        }
-                    });
+            return {
+                code: 200,
+                data: list
+            };
+        })
+        .onRoute("/todo/tasks/:id/edit", function(req) {
+            var params = req.pathParams,
+                data = req.body,
+                task = tasks[params.id];
+            if (!task || !data) {
+                return {
+                    code: 404
+                };
+            }
+            if (task && data) {
+                Object.keys(data).forEach(function(key) {
+                    if (key !== "id") { //id update not allowed
+                        task[key] = data[key];
+                    }
+                });
+                return {
+                    code: 200,
+                    data: task
+                };
+            }
+        })
+        /*.onRoute("/.*", function(req, res) { //TODO sending correct content-type header
+        	var result = {}, fs = require("fs");
+            var filePath = "./" + req.url;
+            if (req.url === "/") {
+                filePath = "./index.html";
+            }
+            try {
+                var file = !req.url.match(/.*\/$/) && fs.readFileSync(require("path").resolve(__dirname, filePath), "utf8");
+                if (file) {
+                    result.code = 200;
+                    result.data = file;
+                } else {
+                    result.code = 404;
                 }
-                return writeJSON(aTask, res);
-            });
-        } else if (operation === 'delete') { //Route /delete
+            } catch (ex) {
+                result.code = 404;
+                result.message = "Not Found";
+            }
+            return result;
+        })*/
+        .onRoute("/todo/tasks/:id/delete", function(req) {
+            var params = req.pathParams,
+                taskId = params.id,
+                task = tasks[taskId];
+            if (!task) {
+                return {
+                    code: 404
+                };
+            }
             delete tasks[taskId];
-            return writeJSON(aTask, res);
-        }
-    }
+            return {
+                code: 200,
+                data: task
+            };
 
-}).listen(9898);
+        });
 
-console.log('Simple todoserver is ready to accept requests on port 9898');
+    http.createServer(server.process).listen(9898);
+
+    console.log("Simple todoserver is ready to accept requests on port 9898");
+})();
