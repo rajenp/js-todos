@@ -19,7 +19,7 @@
  */
 
 
-var TODOView = function() {
+var TODOView = function () {
     this.init();
 };
 
@@ -32,28 +32,28 @@ TODOView.EVENT_TASK_CHANGED = "TASK_CHANGED";
 TODOView.EVENT_DELETE_TASK = "DELETE_TASK";
 
 Extend(TODOView, EventTarget, {
-    init: function() {
-        var list = $("tasks_list");
-        var me = this;
-        list.addEventListener('click', function(evt) {
+    init: function () {
+        var list = $("tasks_list"),
+            me = this;
+        list.addEventListener("click", function (evt) {
             evt = evt || window.event;
             var target = evt.target || evt.srcElement;
             if (target.id && target.className.indexOf("checkbox") >= 0) { //only act on checkboxes with id
                 var checked = target.className.indexOf("checked") >= 0; //checked;
-                me._onTaskChange(target.id, !checked); //toggle state	
+                me._onTaskChange(target.id, !checked); //toggle state   
             } else if (target.id && target.id.indexOf("_delete") > 0) {
                 var taskId = target.id.split("_")[0];
                 me.notify(TODOView.EVENT_DELETE_TASK, taskId);
             }
         });
     },
-    _onTaskChange: function(id, checked) {
+    _onTaskChange: function (id, checked) {
         this.notify(TODOView.EVENT_TASK_CHANGED, {
             taskId: id,
             complete: !!checked
         });
     },
-    updateStatus: function(id, complete) {
+    updateStatus: function (id, complete) {
         var li = $(id + "_li");
         if (li) {
             li.className = complete ? "completed" : "";
@@ -63,11 +63,11 @@ Extend(TODOView, EventTarget, {
             checkbox.className = "checkbox " + (complete ? "checked" : "");
         }
     },
-    renderList: function(list) {
+    renderList: function (list) {
         list = list || [];
         var dom = $("tasks_list");
         var html = [];
-        dom && $each(list, function(value) {
+        dom && $each(list, function (value) {
             value.checked = value.complete ? "checked" : "";
             value.cls = value.checked ? "completed" : "";
             if (!value.complete) {
@@ -78,7 +78,7 @@ Extend(TODOView, EventTarget, {
         });
         dom.innerHTML = html.join("");
     },
-    appendTask: function(task) {
+    appendTask: function (task) {
         var new_task = $("new_task"); //reset new task value
         if (new_task) {
             new_task.value = "";
@@ -91,24 +91,24 @@ Extend(TODOView, EventTarget, {
             elem = null;
         }
     },
-    clearTask: function(taskId) {
+    clearTask: function (taskId) {
         var task = $(taskId + "_li");
         if (task) {
             task.parentNode.removeChild(task);
         }
     },
-    showMessage: function(msg, style) {
+    showMessage: function (msg, style) {
         var div = $("msg");
         if (div) {
             clearTimeout(this._timeout);
             div.className = style || "info";
             div.innerHTML = msg || ""; //Escape
-            this._timeout = setTimeout(function() {
+            this._timeout = setTimeout(function () {
                 div.className = "hide";
             }, 2000); //2 seconds delay
         }
     },
-    showFilter: function(show) {
+    showFilter: function (show) {
         var div = $("filter");
         if (div) {
             div.className = show ? "filter" : "hide";
@@ -116,10 +116,10 @@ Extend(TODOView, EventTarget, {
     }
 });
 
-var TODOController = function() {};
+var TODOController = function () {};
 
 Extend(TODOController, EventTarget, {
-    init: function() {
+    init: function () {
         // Plug the Right Service. 
         // Use TODOService if you want to use simple-todoserver available at https://github.com/rpatil26/js-todos
         this._service = new LocalTODOService(); //new TODOServer(); 
@@ -130,20 +130,20 @@ Extend(TODOController, EventTarget, {
         this._view.listen(TODOView.EVENT_DELETE_TASK, new Callback(this.clearTask, this));
         this._model = [];
     },
-    _preProcessResponse: function(response) {
-        var error = !response || !response.response || response.error || response.response.error;
-        var msg = response.error || response.response.error;
+    _preProcessResponse: function (response) {
+        var error = !response || !response.response || response.error || response.response.error,
+            msg = response.error || response.response.error;
         if (!error) {
             return typeof response.response === "string" ? JSON.parse(response.response) : response.response;
         }
         this._view.showMessage("Error: " + (msg || "Something went wrong!"), "error");
     },
-    launch: function() {
+    launch: function () {
         this.init();
         this.getTasks(); //start getting existing tasks
     },
     //Add 
-    addTask: function(data) {
+    addTask: function (data) {
         this.search({});
         if (!data || !data.task) {
             return this._view.showMessage("Please enter task", "error");
@@ -151,7 +151,7 @@ Extend(TODOController, EventTarget, {
         this._view.showMessage("Adding new task...");
         this._service.addTask(data, new Callback(this.taskAdded, this));
     },
-    taskAdded: function(response) {
+    taskAdded: function (response) {
         var task = this._preProcessResponse(response);
         if (task) {
             if (!this._listReady) {
@@ -162,11 +162,11 @@ Extend(TODOController, EventTarget, {
         }
     },
     //List
-    getTasks: function() {
+    getTasks: function () {
         this._view.showMessage("Fetching tasks...");
         this._service.getTasks(new Callback(this.tasksReceived, this));
     },
-    tasksReceived: function(response) {
+    tasksReceived: function (response) {
         var tasks = this._preProcessResponse(response);
         if (tasks) {
             this._model = tasks;
@@ -176,13 +176,13 @@ Extend(TODOController, EventTarget, {
         }
     },
     //Update
-    updateTask: function(data) {
+    updateTask: function (data) {
         this._view.showMessage("Updating task...");
         if (data && data.taskId) {
             this._service.updateTask(data.taskId, data.complete, new Callback(this.taskUpdated, this));
         }
     },
-    taskUpdated: function(response) {
+    taskUpdated: function (response) {
         var task = this._preProcessResponse(response);
         if (task) {
             this._view.updateStatus(task.id, task.complete);
@@ -190,10 +190,10 @@ Extend(TODOController, EventTarget, {
         }
     },
     //clear
-    clearTask: function(taskId) {
+    clearTask: function (taskId) {
         this._service.clearTask(taskId, new Callback(this.taskCleared, this));
     },
-    taskCleared: function(response) {
+    taskCleared: function (response) {
         var task = this._preProcessResponse(response);
         if (task) {
             this._view.clearTask(task.id);
@@ -201,7 +201,7 @@ Extend(TODOController, EventTarget, {
         }
     },
     //search
-    search: function(props) {
+    search: function (props) {
         this._service.search(props, new Callback(this.tasksReceived, this));
     }
 });

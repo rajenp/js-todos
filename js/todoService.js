@@ -25,25 +25,25 @@
 /* Service Interface to be implemented by a Service */
 var IService = ["getTasks", "addTask", "updateTask", "clearTask", "search"];
 
-var TODOService = function() {
+var TODOService = function () {
     this._loader = AjaxLoader;
 };
 
 TODOService.API_URL = "http://localhost:9898/todo/tasks";
 
 Extend(TODOService, Object, {
-    getTasks: function(callback) {
+    getTasks: function (callback) {
         var endPoint = TODOService.API_URL;
         this._loader.request({
-            method: 'GET',
+            method: "GET",
             url: endPoint,
             callback: callback
         });
     },
-    addTask: function(task, callback) {
+    addTask: function (task, callback) {
         var endPoint = TODOService.API_URL + "/create";
         this._loader.request({
-            method: 'POST',
+            method: "POST",
             data: task,
             url: endPoint,
             callback: callback,
@@ -52,10 +52,10 @@ Extend(TODOService, Object, {
             }
         });
     },
-    updateTask: function(taskId, complete, callback) {
+    updateTask: function (taskId, complete, callback) {
         var endPoint = TODOService.API_URL + "/" + taskId + "/edit";
         this._loader.request({
-            method: 'POST',
+            method: "POST",
             data: {
                 complete: complete
             },
@@ -66,18 +66,18 @@ Extend(TODOService, Object, {
             }
         });
     },
-    clearTask: function(taskId, callback) {
+    clearTask: function (taskId, callback) {
         var endPoint = TODOService.API_URL + "/" + taskId + "/delete";
         this._loader.request({
-            method: 'POST',
+            method: "POST",
             url: endPoint,
             callback: callback
         });
     },
-    search: function(props, callback) {
+    search: function (props, callback) {
         var endPoint = TODOService.API_URL + "/search";
         this._loader.request({
-            method: 'POST',
+            method: "POST",
             data: props,
             url: endPoint,
             callback: callback,
@@ -92,58 +92,61 @@ Extend(TODOService, Object, {
  * Local TODO storage. TODOs are cleared on page refresh.
  */
 
-var LocalTODOService = function() {
-    this._storage = (function() {
+var LocalTODOService = function () {
+    this._storage = (function () {
         var storage = {
                 tasks: {}
             },
+            tasks,
             serialize = false;
         if ('localStorage' in window && window['localStorage'] !== null) {
             storage = window['localStorage'];
-            var tasks = storage["tasks"];
+            tasks = storage.tasks;
             if (!tasks) {
-                storage["tasks"] = "{}";
+                storage.tasks = "{}";
             }
             serialize = true;
         }
         return {
-            get: function(key) {
+            get: function (key) {
                 var data = storage[key];
                 if (data && serialize) {
                     data = JSON.parse(data);
                 }
                 return data;
             },
-            set: function(key, value) {
-                if (!serialize) return; //For JS memory storage we, don't need to do this
+            set: function (key, value) {
+                if (!serialize) { //For JS memory storage we, don't need to do this
+                    return;
+                }
                 storage[key] = serialize && typeof value !== "string" ? JSON.stringify(value) : value;
             }
-        }
+        };
     })();
 };
 
 Extend(LocalTODOService, Object, {
-    _callback: function(cb, resp) {
+    _callback: function (cb, resp) {
         resp = {
             response: resp
         };
-        cb && (cb.exec ? cb.exec(resp) : cb(resp));
+        cb(resp);
     },
-    getTasks: function(callback) {
+    getTasks: function (callback) {
         var tasks = [];
-        $each(this._storage.get("tasks"), function(task) {
+        $each(this._storage.get("tasks"), function (task) {
             tasks.push(task);
         });
         this._callback(callback, tasks);
     },
-    addTask: function(task, callback) {
+    addTask: function (task, callback) {
         var tasks = this._storage.get("tasks");
         task.id = new Date().getTime();
         tasks[task.id] = task;
         this._storage.set("tasks", tasks);
         this._callback(callback, task);
     },
-    updateTask: function(taskId, complete, callback) {
+    updateTask: function (taskId, complete, callback) {
         var tasks = this._storage.get("tasks");
         var task = tasks[taskId];
         if (task) {
@@ -152,7 +155,7 @@ Extend(LocalTODOService, Object, {
         }
         this._callback(callback, task);
     },
-    clearTask: function(taskId, callback) {
+    clearTask: function (taskId, callback) {
         var tasks = this._storage.get("tasks");
         var task = tasks[taskId];
         if (task && task.complete) {
@@ -165,17 +168,19 @@ Extend(LocalTODOService, Object, {
             });
         }
     },
-    search: function(props, callback) {
+    search: function (props, callback) {
         var tasks = [];
         var alltasks = this._storage.get("tasks");
-        $each(alltasks, function(task) {
+        $each(alltasks, function (task) {
             var emptyProps = true,
                 match = false;
-            $each(props, function(value, prop) {
+            $each(props, function (value, prop) {
                 emptyProps = false;
-                match = (task[prop] == value || (!value && typeof task[prop] === "undefined"));
+                match = (task[prop] === value || (!value && typeof task[prop] === "undefined"));
             });
-            (match || emptyProps) && tasks.push(task);
+            if (match || emptyProps) {
+                tasks.push(task);
+            }
         });
         this._callback(callback, tasks);
     }
