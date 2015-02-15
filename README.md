@@ -1,8 +1,34 @@
 # js-todos
 Simple TODO application built using vanilla JS, HTML and CSS
 
-You can plug remote todoserver (https://github.com/rpatil26/js-todos/blob/master/simple-todoserver.js) with it (see TODOService for the endpoints) or it also works with local storage if available or fallbacks to JS page scope storage for the demo purpose. In  JS page scope storage TODOs are cleared after page refresh otherwise they are persisted until remote todoserver is restarted or localStorage is cleared. 
+# About
+* This is sample TODO app built using vanilla JS, HTML and CSS code. 
+* It can be plugged with remote todo server here (https://github.com/rpatil26/node-todoserver)
+* Or it works localStorage (in js memory storge if localStorage is not availale)
 
-You can try it here (Uses localStorage): https://rawgit.com/rpatil26/js-todos/master/index.html
+# Functional
+* Task listing
+* Task check/uncheck - marks complete/pending 
+* Only Completed task can be deleted 
+* Keyboard navigation and accessibility
+* Task filter by state - All, Pending (incomplete) or Completed ones
+* Provides visual feedback with light animation 
 
-![alt tag](https://raw.githubusercontent.com/rpatil26/js-todos/master/screenshot.png)
+# Technical
+* Implemented tiny js lib for common things
+ * Observer pattern for listening, dispatching events - EventTarget
+ * Custom callback that binds with the object scope and can override arguments
+ * Simplete iterator $each 
+ * AjaxLoader to wrap XMLHTTPRequest 
+ * Inheritance - Extend
+ * Basic templating - $template string based templates - ({token} expansion)
+ * Interface enforcement concept - Definining and Implementing - Impls
+* MVC design - Need to clean and refine further
+* Uses CSS3, pseudo classes etc. Uses no images or tables. 
+* Custom (non native) checkbox using CSS, HTML entity and anchor
+
+# Demo (localStorage)
+<p align="center">https://rawgit.com/rpatil26/js-todos/master/index.html</p> 
+
+# Screenshot
+![alt screenshot](https://raw.githubusercontent.com/rpatil26/js-todos/master/screenshot.png)
