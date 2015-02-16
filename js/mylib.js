@@ -101,7 +101,6 @@ var $ = function (id) {
                     data = params.data || null,
                     callback = params.callback,
                     headers = params.headers || [],
-
                     xhr = new XMLHttpRequest();
                 try {
                     xhr.open(method, url, true);

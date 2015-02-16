@@ -55,7 +55,7 @@ Extend(TODOService, Object, {
     updateTask: function (taskId, complete, callback) {
         var endPoint = TODOService.API_URL + "/" + taskId + "/edit";
         this._loader.request({
-            method: "POST",
+            method: "PUT",
             data: {
                 complete: complete
             },
@@ -69,17 +69,21 @@ Extend(TODOService, Object, {
     clearTask: function (taskId, callback) {
         var endPoint = TODOService.API_URL + "/" + taskId + "/delete";
         this._loader.request({
-            method: "POST",
+            method: "DELETE",
             url: endPoint,
             callback: callback
         });
     },
     search: function (props, callback) {
-        var endPoint = TODOService.API_URL + "/search";
+        var endPoint = TODOService.API_URL + "/search",
+            query = "";
+        props = props || {};
+        $each(props, function (value, key) {
+            query += key + "=" + value + "&";
+        });
         this._loader.request({
-            method: "POST",
-            data: props,
-            url: endPoint,
+            method: "GET",
+            url: endPoint + (query ? "?" + query : ""),
             callback: callback,
             headers: {
                 "Content-Type": "application/json"

@@ -129,6 +129,7 @@ Extend(TODOController, EventTarget, {
         this._view.listen(TODOView.EVENT_TASK_CHANGED, new Callback(this.updateTask, this));
         this._view.listen(TODOView.EVENT_DELETE_TASK, new Callback(this.clearTask, this));
         this._model = [];
+        this._listReady = false;
     },
     _preProcessResponse: function (response) {
         var error = !response || !response.response || response.error || response.response.error,
@@ -144,7 +145,6 @@ Extend(TODOController, EventTarget, {
     },
     //Add 
     addTask: function (data) {
-        this.search({});
         if (!data || !data.task) {
             return this._view.showMessage("Please enter task", "error");
         }
@@ -160,6 +160,7 @@ Extend(TODOController, EventTarget, {
             this._view.appendTask(task);
             this._view.showMessage("Task added");
         }
+        //this.search({});
     },
     //List
     getTasks: function () {
