@@ -23,7 +23,7 @@ var TODOView = function () {
     this.init();
 };
 
-TODOView.TASK_TMPL = "<li title='{task}' id='{id}_li' class='{cls}'> <a id='{id}' href='javascript:void(0)' class='checkbox {checked}'></a> <span class='text'>{task}</span> <a href='javascript:void(0)' id='{id}_delete' class='dlt_icon'>⊗</a></li>";
+TODOView.TASK_TMPL = "<li title='{task}' id='{id}_li' class='{cls}'> <a id='{id}' href='javascript:void(0)' class='checkbox {checked}'>{mark}</a> <span class='text'>{task}</span> <a href='javascript:void(0)' id='{id}_delete' class='dlt_icon'>⊗</a></li>";
 
 TODOView.EVENT_ADD_TASK = "ADD_TASK";
 
@@ -61,6 +61,7 @@ Extend(TODOView, EventTarget, {
         var checkbox = $(id);
         if (checkbox) {
             checkbox.className = "checkbox " + (complete ? "checked" : "");
+            checkbox.innerHTML = complete ? "&#9745;" : "&#9744;";
         }
     },
     renderList: function (list) {
@@ -70,6 +71,7 @@ Extend(TODOView, EventTarget, {
         dom && $each(list, function (value) {
             value.checked = value.complete ? "checked" : "";
             value.cls = value.checked ? "completed" : "";
+            value.mark = value.checked ? "&#9745;" : "&#9744;";
             if (!value.complete) {
                 html.splice(0, 0, $template(TODOView.TASK_TMPL, value));
             } else {

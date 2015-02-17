@@ -151,20 +151,18 @@ body {
 .checkbox:before {
     content: '✓';
     color: transparent;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    padding: 2px 4px;
 }
 .checkbox.checked:before {
     content: '✓';
     color: rgb(76, 161, 231);
+    background: #eee;
 }
 .checkbox {
     text-decoration: none;
-    border: 1px solid #ccc;
-    border-radius: 3px;
-    padding: 2px 4px;
-    margin-right: 10px;
-}
-.checkbox.checked {
-    background: #eee;
+    color: transparent;
 }
 .none {
     display: none;
