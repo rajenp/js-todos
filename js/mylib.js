@@ -66,7 +66,7 @@ var $ = function (id) {
     //Simple Inheritance
     Extend = function (Child, Parent, prototypes) {
         Child.prototype = new Parent();
-        Child.prototype.constructor = Parent;
+        Child.prototype.constructor = Child;
         $each(prototypes, function (value, key) {
             Child.prototype[key] = value;
         });

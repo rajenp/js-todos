@@ -124,7 +124,7 @@ Extend(TODOController, EventTarget, {
     init: function () {
         // Plug the Right Service. 
         // Use TODOService if you want to use simple-todoserver available at https://github.com/rpatil26/js-todos
-        this._service = new LocalTODOService(); //new TODOServer(); 
+        this._service = new TODOService(); //new TODOServer(); 
 
         this._view = new TODOView();
         this._view.listen(TODOView.EVENT_ADD_TASK, new Callback(this.addTask, this));
