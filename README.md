@@ -1,5 +1,5 @@
 # js-todos
-Simple TODO application built using vanilla JS, HTML and CSS
+Simple TODO application built using vanilla JS, HTML, CSS and React for the Views.
 
 # About
 * This is sample TODO MVC app built using vanilla JS, HTML and CSS code. 
