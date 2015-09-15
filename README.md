@@ -7,6 +7,12 @@ Simple TODO application built using vanilla JS, HTML, CSS and React for the View
 * It can be plugged with remote todo server here (https://github.com/rpatil26/node-todoserver)
 * Or it works localStorage (in js memory storge if localStorage is not available)
 
+# Demo (localStorage)
+**https://rawgit.com/rpatil26/js-todos/master/index.html**
+
+# Screenshot
+![alt screenshot](https://raw.githubusercontent.com/rpatil26/js-todos/master/screenshot.png)
+
 # Functional
 * Task listing
 * Task check/uncheck - marks complete/pending 
@@ -29,8 +35,3 @@ Simple TODO application built using vanilla JS, HTML, CSS and React for the View
 * Uses CSS3, pseudo classes etc. Uses no images or tables. 
 * Custom (non native) checkbox using CSS, HTML entity and anchor
 
-# Demo (localStorage)
-**https://rawgit.com/rpatil26/js-todos/master/index.html**
-
-# Screenshot
-![alt screenshot](https://raw.githubusercontent.com/rpatil26/js-todos/master/screenshot.png)
