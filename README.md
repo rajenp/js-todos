@@ -2,7 +2,8 @@
 Simple TODO application built using vanilla JS, HTML and CSS
 
 # About
-* This is sample TODO app built using vanilla JS, HTML and CSS code. 
+* This is sample TODO MVC app built using vanilla JS, HTML and CSS code. 
+* It now uses [React] (https://facebook.github.io/react/index.html) for the Views.
 * It can be plugged with remote todo server here (https://github.com/rpatil26/node-todoserver)
 * Or it works localStorage (in js memory storge if localStorage is not available)
 
