@@ -21,7 +21,10 @@
 var $ = function (id) {
         return document.getElementById(id);
     },
-
+    trim = function(str) {
+        str = "" + (str || "");
+        return str.replace(/^\s+|\s+$/gm, "");
+    },
     //Simple callback - executable function
     Callback = function (func, context) {
         return function (data) {
@@ -143,7 +146,7 @@ Function.prototype.Impls = function (iFace) {
     $each(iFace, function (name) {
         var method = me.prototype[name];
         if (!method || typeof method !== "function") {
-            throw new Error("Missing interface implemention: " + name);
+            throw new Error("Missing interface implementation: " + name);
         }
     });
 };

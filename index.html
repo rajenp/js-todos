@@ -1,3 +1,20 @@
+<!--
+Copyright 2015 Rajendra Patil
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+@author Rajendra Patil
+-->
 <!DOCTYPE html>
 <html>
 
@@ -10,45 +27,57 @@
 </head>
 
 <body>
-    <div id="layout">
-        <div id="logo" alt="Logo">todos</div>
-        <div id="msg">&nbsp;</div>
-        <div id="tasks">
-            <div class="new_task_bar">
-                <form onsubmit="return onSubmit();">
-                    <label for="new_task" class="label">Enter a Task:</label>
-                    <input autocomplete="off" placeholder="What do you have to do?" type="text" id="new_task">
-                    <button id="new_task_btn" aria-label="Add Task" type="submit">Add</button>
-                </form>
-            </div>
-            <div class="filter" id="filter">
-                <a id='all_l' data-filter="" href="javascript:void(0)" onclick="applyFilter(this)"> All</a> &#8226;
-                <a id='all_p' data-filter="false" href="javascript:void(0)" onclick="applyFilter(this)">Pending</a> &#8226;
-                <a id='all_c' data-filter="true" onclick="applyFilter(this);" href="javascript:void(0)">Completed </a>
-            </div>
-            <ul id="tasks_list"></ul>
+<div id="layout">
+    <div id="logo" alt="Logo">todos</div>
+    <div id="msg">Loading...</div>
+    <div id="tasks">
+        <div class="new_task_bar">
+            <form onsubmit="return onSubmit();">
+                <label for="new_task" class="label">Enter a Task:</label>
+                <input autocomplete="off" placeholder="What do you have to do?" type="text" id="new_task">
+                <button id="new_task_btn" aria-label="Add Task" type="submit">Add</button>
+            </form>
         </div>
-        <div id="footer">Simple TODO application built using vanilla JS, HTML and CSS
-            <br/>
-            <br/>
-            <a href="https://github.com/rpatil26/js-todos">https://github.com/rpatil26/js-todos</a>
+        <div class="filter" id="filter">
+            <a id='all_l' data-filter="" href="javascript:void(0)" onclick="applyFilter(this)"> All</a> &#8226;
+            <a id='all_p' data-filter="false" href="javascript:void(0)" onclick="applyFilter(this)">Pending</a> &#8226;
+            <a id='all_c' data-filter="true" onclick="applyFilter(this);" href="javascript:void(0)">Completed </a>
         </div>
+        <div id="list_container"></div>
     </div>
-    <script src="js/mylib.js"></script>
-    <script src="js/todoService.js"></script>
-    <script src="js/todoController.js"></script>
-    <script>
-    var todoController = new TODOController(),
-        activeFilterId = "";
-    todoController.launch();
-    var onSubmit = function() {
+    <div id="footer">Simple TODO MVC app built using vanilla JS, HTML, CSS and <a
+            href="https://facebook.github.io/react/">React</a> for the View.
+        <br/>
+        <br/> Developed by <a href="http://rpatil26.github.io">Rajendra Patil</a> at <a
+                href="https://github.com/rpatil26/js-todos">https://github.com/rpatil26/js-todos</a>
+    </div>
+</div>
+<!-- MY LIB -->
+<script src="js/mylib.js"></script>
+
+<!-- REACT  -->
+<script src="https://fb.me/react-0.13.3.min.js"></script>
+<!-- REACT VIEW -->
+<script src="js/todoReactView.js"></script>
+
+<!-- Plain JS VIEW -->
+<!--script src="js/todoView.js"></script-->
+
+<script src="js/todoService.js"></script>
+<script src="js/todoController.js"></script>
+
+<script>
+    var activeFilterId = "",
+            todoController = new TODOController();
+
+    var onSubmit = function () {
         var value = $("new_task").value;
         todoController.addTask({
-            task: value
+            task: trim(value)
         });
         return false;
     };
-    var applyFilter = function(elem) {
+    var applyFilter = function (elem) {
         activeFilterId && ($(activeFilterId).className = "");
         activeFilterId = elem.id;
         elem.className = "active";
@@ -57,7 +86,10 @@
             complete: value === "true"
         } : {});
     };
-    </script>
+
+    todoController.launch();
+
+</script>
 </body>
 
 </html>
