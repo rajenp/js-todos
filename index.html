@@ -27,69 +27,32 @@ limitations under the License.
 </head>
 
 <body>
-<div id="layout">
-    <div id="logo" alt="Logo">todos</div>
-    <div id="msg">Loading...</div>
-    <div id="tasks">
-        <div class="new_task_bar">
-            <form onsubmit="return onSubmit();">
-                <label for="new_task" class="label">Enter a Task:</label>
-                <input autocomplete="off" placeholder="What do you have to do?" type="text" id="new_task">
-                <button id="new_task_btn" aria-label="Add Task" type="submit">Add</button>
-            </form>
+    <div id="layout">
+        <div id="logo" alt="Logo">todos</div>
+        <div id="main_view">Initiazing views...</div>
+        <div id="footer">
+            Simple TODO MVC app built using vanilla JS, HTML, CSS and <a href="https://facebook.github.io/react/">React</a> for the View.
+            <br/>
+            <br/> Developed by <a href="http://rpatil26.github.io">Rajendra Patil</a> at
+            <a href="https://github.com/rpatil26/js-todos"> https://github.com/rpatil26/js-todos </a>
         </div>
-        <div class="filter" id="filter">
-            <a id='all_l' data-filter="" href="javascript:void(0)" onclick="applyFilter(this)"> All</a> &#8226;
-            <a id='all_p' data-filter="false" href="javascript:void(0)" onclick="applyFilter(this)">Pending</a> &#8226;
-            <a id='all_c' data-filter="true" onclick="applyFilter(this);" href="javascript:void(0)">Completed </a>
-        </div>
-        <div id="list_container"></div>
     </div>
-    <div id="footer">Simple TODO MVC app built using vanilla JS, HTML, CSS and <a
-            href="https://facebook.github.io/react/">React</a> for the View.
-        <br/>
-        <br/> Developed by <a href="http://rpatil26.github.io">Rajendra Patil</a> at <a
-                href="https://github.com/rpatil26/js-todos">https://github.com/rpatil26/js-todos</a>
-    </div>
-</div>
-<!-- MY LIB -->
-<script src="js/mylib.js"></script>
-
-<!-- REACT  -->
-<script src="https://fb.me/react-0.13.3.min.js"></script>
-<!-- REACT VIEW -->
-<script src="js/todoReactView.js"></script>
-
-<!-- Plain JS VIEW -->
-<!--script src="js/todoView.js"></script-->
-
-<script src="js/todoService.js"></script>
-<script src="js/todoController.js"></script>
-
-<script>
-    var activeFilterId = "",
-            todoController = new TODOController();
-
-    var onSubmit = function () {
-        var value = $("new_task").value;
-        todoController.addTask({
-            task: trim(value)
-        });
-        return false;
-    };
-    var applyFilter = function (elem) {
-        activeFilterId && ($(activeFilterId).className = "");
-        activeFilterId = elem.id;
-        elem.className = "active";
-        var value = elem.getAttribute("data-filter");
-        todoController.search(value ? {
-            complete: value === "true"
-        } : {});
-    };
-
-    todoController.launch();
-
-</script>
+    <!-- MY LIB -->
+    <script src="js/mylib.js"></script>
+    <!-- REACT  -->
+    <script src="https://fb.me/react-0.13.3.min.js"></script>
+    <!-- REACT VIEW -->
+    <script src="js/todoReactView.js"></script>
+    <!-- Plain JS VIEW. Use in Controller -->
+    <script src="js/todoView.js"></script>
+    <script src="js/todoService.js"></script>
+    <script src="js/todoController.js"></script>
+    <script>
+    new TODOController().launch({
+        useReactViews: false,
+        useRemoteService: false
+    });
+    </script>
 </body>
 
 </html>

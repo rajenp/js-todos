@@ -26,6 +26,16 @@ body {
     width: 90%;
     max-width: 750px;
     margin: 0 auto;
+    text-align: center;
+}
+.view_info {
+    color: #333;
+    border: 1px solid #999;
+    background: #bbb;
+    border-radius: 10px;
+    width: 50%;
+    margin: 15px auto 0 auto;
+    padding: 2px;
 }
 #logo, form, #msg {
     text-align: center;
