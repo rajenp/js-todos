@@ -7,8 +7,8 @@ Simple TODO application built using vanilla JS, HTML, CSS and React for the View
 * It can be plugged with remote todo server here (https://github.com/rpatil26/node-todoserver)
 * Or it works localStorage (in js memory storge if localStorage is not available)
 
-# Demo (localStorage)
-**https://rawgit.com/rpatil26/js-todos/master/index.html**
+# Live Demo
+**https://rawgit.com/rpatil26/js-todos/master/index.html** (uses localStorage)
 
 # Screenshot
 ![alt screenshot](https://raw.githubusercontent.com/rpatil26/js-todos/master/screenshot.png)
