@@ -147,17 +147,13 @@
             if (target.id && target.className.indexOf("checkbox") >= 0) {
                 var taskId = target.id,
                     checked = target.className.indexOf("checked") >= 0;
-                //this.completeTask(taskId, checked);
                 this.props.onTaskChange && this.props.onTaskChange({
                     taskId: taskId,
                     complete: !checked
                 });
-                //this._handler && this._handler.notify(TODOView.EVENT_TASK_CHANGED, {});
             } else if (target.id && target.id.indexOf("_delete") > 0) {
                 var taskId = target.id.split("_")[0];
-                //this.removeTask(taskId); 
                 this.props.onTaskDelete && this.props.onTaskDelete(taskId);
-                //this._handler && this._handler.notify(TODOView.EVENT_DELETE_TASK, taskId);
             }
         },
 
@@ -248,38 +244,59 @@
                 div.className = show ? "filter" : "hide";
             }
         },
-        findTaskById: function(taskId) {
+        findIndexById: function(taskId) {
             var tasks = this.state.tasks || [];
             for (var idx = 0, len = tasks.length; idx < len; idx++) {
                 if (tasks[idx].id == taskId) {
-                    return tasks[idx];
+                    return idx;
                 }
             }
-        },
-        reloadFromState: function() {
-            this.setState({
-                tasks: this.state.tasks
-            });
+            return -1;
         },
         refreshTasks: function(tasks) {
-            this.state.tasks = tasks || this.state.tasks;
-            this.reloadFromState();
+            var newState = React.addons.update(this.state, {
+                tasks: {
+                    $set: tasks
+                }
+            });
+            this.setState(newState);
         },
         addTask: function(task) {
-            this.state.tasks.push(task);
-            this.reloadFromState();
+            if (!task || !task.id) return;
+            var newState = React.addons.update(this.state, {
+                tasks: {
+                    $push: [task]
+                }
+            });
+            this.setState(newState);
         },
         removeTask: function(taskId) {
-            this.state.tasks = this.state.tasks.filter(function(task) {
-                return (task.id != taskId);
-            });
-            this.reloadFromState();
+            var index = this.findIndexById(taskId);
+            if (index > -1) {
+                var newState = React.addons.update(this.state, {
+                    tasks: {
+                        $splice: [
+                            [index, 1]
+                        ]
+                    }
+                });
+                this.setState(newState);
+            }
         },
         completeTask: function(taskId, complete) {
-            var task = this.findTaskById(taskId);
-            if (task) {
-                task.complete = !!complete;
-                this.reloadFromState();
+            var index = this.findIndexById(taskId);
+            if (index > -1) {
+                var newState = React.addons.update(this.state, {
+                    tasks: {
+                        [index]: {
+                            $apply: function(task) {
+                                task.complete = !!complete;
+                                return task;
+                            }
+                        }
+                    }
+                });
+                this.setState(newState);
             }
         }
     });

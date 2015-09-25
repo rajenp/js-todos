@@ -28,14 +28,14 @@
     myLib.Extend(TODOController, myLib.EventTarget, {
         init: function(prefs) {
             prefs = prefs || {};
-            
+
             // Plug the Right Service. 
             // Use TODOService if you want to use simple-todoserver available at https://github.com/rpatil26/node-todoserver
-            this._service = prefs.useRemoteService ? RemoteTODOService : LocalTODOService; 
+            this._service = prefs.useRemoteService ? RemoteTODOService : LocalTODOService;
             var me = this;
 
             // Plug the Right View. 
-            this._view = prefs.useReactViews ? this._createReactView() : this._createJSView(); 
+            this._view = prefs.useReactViews ? this._createReactView() : this._createJSView();
 
             //Ensure View has all APIs we need
             myLib.Impls(this._view, IView);
@@ -122,7 +122,7 @@
             var tasks = this._preProcessResponse(response);
             if (tasks) {
                 this._model = tasks;
-                this._view.refreshTasks( /*this._filterList(*/ tasks /*)*/ );
+                this._view.refreshTasks(tasks);
                 this._view.showMessage(tasks.length + " task" + (tasks.length > 1 ? "s" : "") + " found");
                 this._listReady = true;
             }
